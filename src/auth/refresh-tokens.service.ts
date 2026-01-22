@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, EntityManager } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
@@ -24,7 +24,10 @@ export class RefreshTokensService {
   async createRefreshToken(
     user: User,
     options?: { device?: string; ipAddress?: string; expiresDays?: number },
+    manager?: EntityManager,
   ) {
+    const repo = manager ? manager.getRepository(RefreshToken) : this.repo;
+
     const rawToken = crypto.randomBytes(64).toString('hex');
     const tokenHash = await bcrypt.hash(rawToken, this.SALT_ROUNDS);
 
@@ -34,7 +37,7 @@ export class RefreshTokensService {
 
     const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
-    const record = this.repo.create({
+    const record = repo.create({
       tokenHash,
       user,
       device: options?.device,
@@ -43,7 +46,7 @@ export class RefreshTokensService {
       revoked: false,
     });
 
-    await this.repo.save(record);
+    await repo.save(record);
 
     // Return compound token so we can look up by id quickly and compare hash
     return `${record.id}.${rawToken}`;

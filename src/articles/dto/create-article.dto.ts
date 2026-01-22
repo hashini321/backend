@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
-import { ArticleStatus, ArticleVisibility, ContentType } from '../article.entity';
+import { ArticleStatus, ArticleVisibility } from '../article.entity';
 
 export class CreateArticleDto {
   @ApiProperty({ example: 'How to trade forex', description: 'Article title' })
@@ -13,10 +13,10 @@ export class CreateArticleDto {
   @IsNotEmpty()
   body: string;
   
-  @ApiProperty({ enum: ContentType, required: true, default: ContentType.TEXT })
-  @IsEnum(ContentType)
-  @IsNotEmpty()
-  contentType: ContentType;
+  // @ApiProperty({ enum: ContentType, required: true, default: ContentType.TEXT })
+  // @IsEnum(ContentType)
+  // @IsNotEmpty()
+  // contentType: ContentType;
 
   @ApiProperty({ example: ['https://cdn.example.com/image1.jpg'], required: false })
   @IsOptional()

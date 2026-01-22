@@ -70,16 +70,18 @@ export class ArticleService {
     return this.repo.save(article);
   }
 
-  async findAll(query: QueryArticleDto, requester?: User) {
+  async findAll(query: QueryArticleDto, userId: String) {
     const page = query.page ?? 1;
     const limit = Math.min(query.limit ?? 10, 100);
+    console.log("queryyyyyyyyyyy", query.visibility, userId);
     const qb = this.repo.createQueryBuilder('article')
       .leftJoinAndSelect('article.user', 'user');
 
     // Visibility: public callers only see PUBLIC
-    if (!requester) {
-      qb.andWhere('article.visibility = :public', { public: ArticleVisibility.PUBLIC });
-    } else if (query.visibility) {
+    // if (!requester) {
+    //   qb.andWhere('article.visibility = :public', { public: ArticleVisibility.PUBLIC });
+    // } else 
+      if (query.visibility) {
       qb.andWhere('article.visibility = :visibility', { visibility: query.visibility });
     }
 
@@ -87,19 +89,74 @@ export class ArticleService {
       qb.andWhere('article.status = :status', { status: query.status });
     }
 
-    if (query.userId) {
-      qb.andWhere('user.id = :userId', { userId: query.userId });
+    if (userId) {
+      qb.andWhere('user.id = :userId', { userId: userId });
     }
 
     if (query.keyword) {
       qb.andWhere('(article.title ILIKE :kw OR article.body ILIKE :kw)', { kw: `%${query.keyword}%` });
     }
     if (query.contentType) {
-        qb.andWhere('article.contentType = :contentType', { contentType: query.contentType });
+        // qb.andWhere('article.video = :contentType', { contentType: query.contentType });
+          qb.andWhere('article.video IS NOT NULL')
+    .andWhere("TRIM(article.video) <> ''");
     }
 
     // Sorting
     const [sortColumn, sortDir] = (query.sort ?? 'createdAt:DESC').split(':');
+    const validSortCol = ['createdAt', 'updatedAt', 'title'];
+    const column = validSortCol.includes(sortColumn) ? `article.${sortColumn}` : 'article.createdAt';
+    const direction = (sortDir && sortDir.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
+
+    qb.orderBy(column, direction);
+
+    const [data, total] = await qb.skip((page - 1) * limit).take(limit).getManyAndCount();
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+      },
+    };
+  }
+
+   async findLatestVideo(userId: String) {
+    const page = 1;
+    const limit = 2;
+    console.log("queryyyyyyyyyyy", userId);
+    const qb = this.repo.createQueryBuilder('article')
+      .leftJoinAndSelect('article.user', 'user');
+
+    // Visibility: public callers only see PUBLIC
+    // if (!requester) {
+    //   qb.andWhere('article.visibility = :public', { public: ArticleVisibility.PUBLIC });
+    // } else 
+    //   if (query.visibility) {
+    //   qb.andWhere('article.visibility = :visibility', { visibility: query.visibility });
+    // }
+
+    // if (query.status) {
+    //   qb.andWhere('article.status = :status', { status: query.status });
+    // }
+
+    if (userId) {
+      qb.andWhere('user.id = :userId', { userId: userId });
+    }
+
+    qb.andWhere('article.video IS NOT NULL')
+    .andWhere("TRIM(article.video) <> ''");
+
+    // if (query.keyword) {
+    //   qb.andWhere('(article.title ILIKE :kw OR article.body ILIKE :kw)', { kw: `%${query.keyword}%` });
+    // }
+    // if (query.contentType) {
+    //     qb.andWhere('article.contentType = :contentType', { contentType: query.contentType });
+    // }
+
+    // Sorting
+    const [sortColumn, sortDir] = ('createdAt:DESC').split(':');
     const validSortCol = ['createdAt', 'updatedAt', 'title'];
     const column = validSortCol.includes(sortColumn) ? `article.${sortColumn}` : 'article.createdAt';
     const direction = (sortDir && sortDir.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';

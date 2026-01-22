@@ -4,8 +4,8 @@ import { Repository, LessThan } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Otp } from './entities/otp.entity';
 import { UsersService } from '../../users/users.service';
-import { generateOtp } from './utils/otp.generator';
-import { sendOtpEmailStub } from './utils/email.stub';
+import { generateOtp } from '../../../helpers/otp.generator';
+import { sendOtpEmailStub } from '../../../helpers/email.stub';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 

@@ -7,8 +7,8 @@ export class VerifyOtpDto {
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ example: '123456' })
+  @ApiProperty({ example: '1234' })
   @IsNotEmpty()
-  @Matches(/^\d{6}$/, { message: 'otp must be 6 digits' })
+  @Matches(/^\d{4}$/, { message: 'otp must be 4 digits' })
   otp: string;
 }

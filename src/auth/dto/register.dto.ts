@@ -19,14 +19,17 @@ export class RegisterDto {
 
   @ApiProperty({ example: '0123456789' })
   @IsNotEmpty()
-  @Matches(/^0\d{9}$/, {
-    message: 'mobileNumber must start with 0 and be exactly 10 digits',
-  })
   mobileNumber: string;
 
   @ApiProperty({ example: 'StrongP@ssw0rd' })
   @IsString()
   @MinLength(6)
   @IsNotEmpty()
-  password: string; 
+  password: string;
+
+  @ApiProperty({ example: '1234', description: '4-digit registration OTP' })
+  @IsNotEmpty()
+  @Matches(/^\d{4}$/, { message: 'otp must be 4 digits' })
+  otp: string;
 }
+

@@ -54,10 +54,27 @@ export class ArticleController {
   @ApiQuery({ name: 'status', required: false })
   @ApiQuery({ name: 'visibility', required: false })
   @ApiQuery({ name: 'userId', required: false })
+  @ApiQuery({ name: 'contentType', required: false })
   @ApiQuery({ name: 'sort', required: false })
   async findAll(@Query() query: QueryArticleDto, @Req() req: any) {
     console.log('ArticleController.findAll called with query:', query);
-    const user: User | undefined = req.user;
-    return this.service.findAll(query, user);
+    const userId = req.id;
+    return this.service.findAll(query, userId);
   }
+
+  @Get('/video')
+  @ApiOperation({ summary: 'List articles with pagination, search, filters and sorting' })
+  // @ApiQuery({ name: 'page', required: false })
+  // @ApiQuery({ name: 'limit', required: false })
+  // @ApiQuery({ name: 'keyword', required: false })
+  // @ApiQuery({ name: 'status', required: false })
+  // @ApiQuery({ name: 'visibility', required: false })
+  // @ApiQuery({ name: 'userId', required: false })
+  // @ApiQuery({ name: 'sort', required: false })
+  async findLatestVideo(@Query() query: QueryArticleDto, @Req() req: any) {
+    console.log('ArticleController.findAll called with query:');
+    const userId = req.id;
+    return this.service.findLatestVideo(userId);
+  }
+
 }

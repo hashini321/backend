@@ -13,13 +13,13 @@ import {
 export enum ArticleStatus {
   DRAFT = 'DRAFT',
   PUBLISHED = 'PUBLISHED',
-  PREMIUM = 'PREMIUM',
 }
 
 export enum ArticleVisibility {
   PUBLIC = 'PUBLIC',
   AUTH_ONLY = 'AUTH_ONLY',
   PRIVATE = 'PRIVATE',
+  PREMIUM = 'PREMIUM',
 }
 
 export enum ContentType {
@@ -38,9 +38,9 @@ export class Article {
   @Column({ type: 'text' })
   body: string;
 
-  @Column({ type: 'enum', enum: ContentType, default: ContentType.TEXT })
-  @Index()
-  contentType: ContentType;
+  // @Column({ type: 'enum', enum: ContentType, default: ContentType.TEXT })
+  // @Index()
+  // contentType: ContentType;
 
   // Store multiple image URLs (Postgres text array)
   @Column('text', { array: true, nullable: true })

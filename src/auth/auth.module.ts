@@ -12,6 +12,8 @@ import { RefreshTokensService } from './refresh-tokens.service';
 import { Otp } from './forgot-password/entities/otp.entity';
 import { ForgotPasswordService } from './forgot-password/forgot-password.service';
 import { ForgotPasswordController } from './forgot-password/forgot-password.controller';
+import { EmailOtp } from './entities/email-otp.entity';
+import { RegistrationService } from './registration.service';
 
 @Module({
   imports: [
@@ -28,10 +30,10 @@ import { ForgotPasswordController } from './forgot-password/forgot-password.cont
         };
       },
     }),
-    TypeOrmModule.forFeature([RefreshToken, Otp]),
+    TypeOrmModule.forFeature([RefreshToken, Otp, EmailOtp]),
     UsersModule,
   ],
-  providers: [AuthService, JwtStrategy, RefreshTokensService, ForgotPasswordService],
+  providers: [AuthService, JwtStrategy, RefreshTokensService, ForgotPasswordService, RegistrationService],
   controllers: [AuthController, ForgotPasswordController],
   exports: [AuthService],
 })

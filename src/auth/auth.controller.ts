@@ -2,20 +2,36 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LogoutDto } from './dto/logout.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
+import { SendRegistrationOtpDto } from './dto/send-registration-otp.dto';
+import { RegistrationService } from './registration.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly registrationService: RegistrationService) {}
+
+  @Post('send-registration-otp')
+  @ApiOperation({ summary: 'Request registration OTP (pre-registration)' })
+  async sendRegistrationOtp(@Body() dto: SendRegistrationOtpDto) {
+    return this.registrationService.sendRegistrationOtp(dto);
+  }
+
+  @Post('resend-registration-otp')
+  @ApiOperation({ summary: 'Resend registration OTP (only when previous OTP expired)' })
+  async resendRegistrationOtp(@Body() dto: SendRegistrationOtpDto) {
+    return this.registrationService.resendRegistrationOtp(dto);
+  }
+  
 
   @Post('register')
+  @ApiOperation({ summary: 'Register with email OTP (pre-verified)' })
   async register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+    return this.registrationService.registerWithOtp(dto);
   }
 
   @Post('login')
